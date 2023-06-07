@@ -17,12 +17,12 @@ class _TaskViewState extends State<TaskView> {
       length: 3,
       child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Color(0xffE9EDFF),
+            backgroundColor: const Color(0xffE9EDFF),
             actions: [
               IconButton(
                 icon: const Icon(Icons.account_circle_outlined,
                     color: Colors.deepPurple),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {},
               ),
             ],
             elevation: 0,
