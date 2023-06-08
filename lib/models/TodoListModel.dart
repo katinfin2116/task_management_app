@@ -2,44 +2,24 @@
 //
 //     final todoListModel = todoListModelFromJson(jsonString);
 
+import 'package:meta/meta.dart';
 import 'dart:convert';
 
-TodoListModel todoListModelFromJson(String str) => TodoListModel.fromJson(json.decode(str));
+List<TodoListModel> todoListModelFromJson(String str) =>
+    List<TodoListModel>.from(
+        json.decode(str).map((x) => TodoListModel.fromJson(x)));
 
-String todoListModelToJson(TodoListModel data) => json.encode(data.toJson());
+String todoListModelToJson(List<TodoListModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class TodoListModel {
-  final List<Task> tasks;
-  final int pageNumber;
-  final int totalPages;
-
-  TodoListModel({
-    required this.tasks,
-    required this.pageNumber,
-    required this.totalPages,
-  });
-
-  factory TodoListModel.fromJson(Map<String, dynamic> json) => TodoListModel(
-    tasks: List<Task>.from(json["tasks"].map((x) => Task.fromJson(x))),
-    pageNumber: json["pageNumber"],
-    totalPages: json["totalPages"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "tasks": List<dynamic>.from(tasks.map((x) => x.toJson())),
-    "pageNumber": pageNumber,
-    "totalPages": totalPages,
-  };
-}
-
-class Task {
   final String id;
   final String title;
   final String description;
   final String createdAt;
   final String status;
 
-  Task({
+  TodoListModel({
     required this.id,
     required this.title,
     required this.description,
@@ -47,19 +27,19 @@ class Task {
     required this.status,
   });
 
-  factory Task.fromJson(Map<String, dynamic> json) => Task(
-    id: json["id"],
-    title: json["title"],
-    description: json["description"],
-    createdAt: json["createdAt"],
-    status: json["status"],
-  );
+  factory TodoListModel.fromJson(Map<String, dynamic> json) => TodoListModel(
+        id: json["id"],
+        title: json["title"],
+        description: json["description"],
+        createdAt: json["createdAt"],
+        status: json["status"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "title": title,
-    "description": description,
-    "createdAt": createdAt,
-    "status": status,
-  };
+        "id": id,
+        "title": title,
+        "description": description,
+        "createdAt": createdAt,
+        "status": status,
+      };
 }

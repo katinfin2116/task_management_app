@@ -4,18 +4,28 @@ import 'package:dio/dio.dart';
 import 'package:task_management_app/repositories/todo_list_repository.dart';
 
 import '../models/TodoListModel.dart';
+import '../models/TodoListTestModel.dart';
 
 class TodoListAPI extends TodoListRepository {
 
-  late final TodoListModel todoListModel;
+  late List<TodoListModel> todoListModel;
 
   @override
-  Future<TodoListModel> getAllTodoList() async {
+  Future<List<TodoListModel>> getAllTodoList() async {
     try {
       var response =
           await Dio().get('https://todo-list-api-mfchjooefq-as.a.run.app/todo-list');
-      Map<String, dynamic> map = jsonDecode(response.data);
-      todoListModel = TodoListModel.fromJson(map);
+          // await Dio().get('https://jsonplaceholder.typicode.com/posts');
+
+
+
+      var list = response.data["tasks"] as List;
+      todoListModel = list.map((post) => TodoListModel.fromJson(post)).toList();
+
+
+      //List<String> streetsList = new List<String>.from(streetsFromJson);
+      //   final todoListModelddd = todoListModelFromJson(streetsFromJson);
+      //Map<String, dynamic> map = jsonDecode(response.data);
       var check = "";
 
     } catch (exception) {
