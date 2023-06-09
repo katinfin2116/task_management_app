@@ -55,11 +55,12 @@ class _TodoViewState extends State<TodoView> {
             groupSeparatorBuilder: (String value) => Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8, top: 16),
               child: Container(
-                padding: EdgeInsets.only(left: 10, right: 10),
+                padding: const EdgeInsets.only(left: 10, right: 10),
                 child: Text(
                   value,
                   textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -75,7 +76,7 @@ class _TodoViewState extends State<TodoView> {
                 child: SizedBox(
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 0.0),
+                        horizontal: 10.0, vertical: 8.0),
                     leading: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey,
@@ -94,7 +95,9 @@ class _TodoViewState extends State<TodoView> {
                       ),
                     ),
                     title: Text(element.title),
-                    subtitle: Text(element.title),
+                    subtitle: Container(
+                      margin: const EdgeInsets.only(top: 6),
+                        child: Text(element.description ,style: TextStyle(fontSize: 12),)),
                     trailing: IconButton(
                       icon: Container(
                           padding: const EdgeInsets.only(

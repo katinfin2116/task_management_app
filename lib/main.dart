@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_management_app/views/login/login_view.dart';
 import 'package:task_management_app/views/task/task_view.dart';
 
 void main() {
@@ -15,7 +16,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const TaskView(),
+      // home: const TaskView(),
+      home:   LoginView(),
     );
   }
 }
