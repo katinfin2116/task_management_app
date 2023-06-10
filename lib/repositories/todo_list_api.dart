@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:task_management_app/repositories/todo_list_repository.dart';
 
-import '../models/TodoListModel.dart';
+import '../models/todo_list_model.dart';
 
 class TodoListAPI extends TodoListRepository {
   late List<TodoListModel> todoListModel;

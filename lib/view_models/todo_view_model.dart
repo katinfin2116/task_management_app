@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:task_management_app/models/TodoListModel.dart';
+import 'package:task_management_app/models/todo_list_model.dart';
 
 import '../repositories/todo_list_repository.dart';
 

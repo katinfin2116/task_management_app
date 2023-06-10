@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:task_management_app/models/TodoListModel.dart';
+import 'package:task_management_app/models/todo_list_model.dart';
 import 'package:task_management_app/repositories/todo_list_api.dart';
 
 import '../../view_models/todo_view_model.dart';
