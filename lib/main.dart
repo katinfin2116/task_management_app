@@ -13,16 +13,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UserActivityDetector(
-        child: GetMaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       home: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Task Management',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
         home: LoginView(),
       ),
-    ));
+    );
   }
 }
