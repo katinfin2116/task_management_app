@@ -1,15 +1,28 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_pin_code_widget/flutter_pin_code_widget.dart';
+import 'package:local_session_timeout/local_session_timeout.dart';
 
 import '../task/task_view.dart';
 
 class LoginView extends StatefulWidget {
+
+  final StreamController<SessionState> sessionStateStream;
+  LoginView({
+    required this.sessionStateStream
+  });
+
+
   @override
-  _LoginViewState createState() => _LoginViewState();
+  _LoginViewState createState() => _LoginViewState(sessionStateStream);
+
 }
 
-class _LoginViewState extends State {
+class _LoginViewState extends State<LoginView> {
+  final StreamController<SessionState> sessionStateStream;
+  _LoginViewState(this.sessionStateStream);
+
   var checkPin = "Pin length is 6 digits";
   Color checkPinColor = Colors.grey;
 
@@ -44,15 +57,15 @@ class _LoginViewState extends State {
                         color: Colors.white),
                     minPinLength: 6,
                     maxPinLength: 6,
-                    onPressColorAnimation: Colors.redAccent,
                     onChangedPin: (pin) {},
                     onEnter: (pin, _) {
                       if (pin == "123456") {
+                        sessionStateStream.add(SessionState.startListening);
                         Future.delayed(Duration.zero, () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const TaskView()),
+                                builder: (context) => TaskView(sessionStateStream: sessionStateStream,)),
                           );
                         });
                       } else {

@@ -41,6 +41,7 @@ dependencies:
   flutter_pin_code_widget: ^0.1.0
   get: ^4.6.5
   flutter_slidable: ^3.0.0
+  local_session_timeout: ^2.3.0
 
 dev_dependencies:
   flutter_test:
