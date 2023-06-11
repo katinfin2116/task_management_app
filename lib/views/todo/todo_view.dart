@@ -17,29 +17,29 @@ class _TodoViewState extends State<TodoView> {
   var todoListViewModel = TodoViewModel(todoListRepository: TodoListAPI());
 
   late List<TodoListModel> _todoList = [];
+  var setGetDataOnInitState = true;
 
-  // List _todoList = [
-  //   {'name': 'John', 'group': 'Today', 'subtitle': 'Task on day' },
-  //   {'name': 'Will', 'group': 'Team B', 'subtitle': 'Task on day' },
-  //   {'name': 'Beth', 'group': 'Today', 'subtitle': 'Task on day'},
-  //   {'name': 'Miranda', 'group': 'Team B', 'subtitle': 'Task on day'},
-  //   {'name': 'Mike', 'group': 'Team C', 'subtitle': 'Task on day'},
-  //   {'name': 'Danny', 'group': 'Today', 'subtitle': 'Task on day'},
-  //   {'name': 'Ddddd', 'group': 'Today', 'subtitle': 'Task on day'},
-  //   {'name': 'GoGogo', 'group': 'Today', 'subtitle': 'Task on day'},
-  //   {'name': 'Michel', 'group': 'Today', 'subtitle': 'Task on day'},
-  // ];
-  //
+  Future<List<TodoListModel>> getData() async {
+    if (_todoList.isEmpty) {
+      if (setGetDataOnInitState == false) {
+        return todoListViewModel.fetchAllTodoList();
+      }
+      return _todoList;
+    }
+    return _todoList;
+  }
 
   @override
   void initState() {
+    setGetDataOnInitState = false;
+    getData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<TodoListModel>>(
-      future: todoListViewModel.fetchAllTodoList(),
+      future: getData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -65,7 +65,7 @@ class _TodoViewState extends State<TodoView> {
                 ),
               ),
             ),
-            itemBuilder: (c, element) {
+            itemBuilder: (context, index) {
               return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -75,21 +75,20 @@ class _TodoViewState extends State<TodoView> {
                 margin:
                     const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
                 child: Slidable(
-                  // Specify a key if the Slidable is dismissible.
                   key: const ValueKey(0),
-
-                  // The start action pane is the one at the left or the top side.
                   startActionPane: ActionPane(
-                    // A motion is a widget used to control how the pane animates.
                     motion: const ScrollMotion(),
-
-                    // A pane can dismiss the Slidable.
                     dismissible: DismissiblePane(onDismissed: () {}),
-
-                    // All actions are defined in the children parameter.
                     children: [
                       SlidableAction(
-                        onPressed: deleteItem,
+                        autoClose: true,
+                        onPressed: (BuildContext context) {
+                          deleteItem(index.id.toString());
+                        },
+                        // onPressed: (value) {
+                        //   _todoList.removeAt(0);
+                        //   setState(() {});
+                        // },
                         backgroundColor: const Color(0xFFFE4A49),
                         foregroundColor: Colors.white,
                         icon: Icons.delete,
@@ -111,17 +110,17 @@ class _TodoViewState extends State<TodoView> {
                       child: Container(
                         alignment: Alignment.center,
                         child: Text(
-                          element.title.substring(0, 2),
+                          index.title.substring(0, 2),
                           style: const TextStyle(
                               fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),
-                    title: Text(element.title),
+                    title: Text(index.title),
                     subtitle: Container(
                         margin: const EdgeInsets.only(top: 6),
                         child: Text(
-                          element.description,
+                          index.description,
                           style: TextStyle(fontSize: 12),
                         )),
                     trailing: IconButton(
@@ -144,7 +143,10 @@ class _TodoViewState extends State<TodoView> {
     );
   }
 
-  void deleteItem(BuildContext context) {
-    setState(() {});
+  void deleteItem(String id) {
+    setGetDataOnInitState = true;
+    setState(() {
+      _todoList.removeWhere((item) => item.id == id);
+    });
   }
 }
