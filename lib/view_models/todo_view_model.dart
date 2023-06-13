@@ -10,8 +10,8 @@ class TodoViewModel {
 
   TodoViewModel({this.todoListRepository});
 
-  Future<List<TodoListModel>> fetchAllTodoList() async {
-    List<TodoListModel> list = await todoListRepository!.getAllTodoList();
+  Future<List<TodoListModel>> fetchAllTodoList(String limit) async {
+    List<TodoListModel> list = await todoListRepository!.getAllTodoList(limit);
     return list;
   }
 }
