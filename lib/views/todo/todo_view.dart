@@ -60,7 +60,8 @@ class _TodoViewState extends State<TodoView> {
   Widget build(BuildContext context) {
     return FutureBuilder<List<TodoListModel>>(
       future: getInit(),
-      builder: (context, snapshot) {
+      builder: (context, snapshot)
+      {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
         } else {
@@ -105,7 +106,8 @@ class _TodoViewState extends State<TodoView> {
                         elevation: 0.0,
                         margin: const EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 5.0),
-                        child: Slidable(
+                        child:
+                        Slidable(
                           key: const ValueKey(0),
                           startActionPane: ActionPane(
                             motion: const ScrollMotion(),

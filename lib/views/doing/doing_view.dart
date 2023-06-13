@@ -2,7 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
+import 'package:task_management_app/models/todo_list_model.dart';
+
+import '../../models/task_list_model.dart';
+import '../../repositories/todo_list_api.dart';
+import '../../view_models/doing_view_model.dart';
+import '../../view_models/todo_view_model.dart';
 
 class DoingView extends StatefulWidget {
   const DoingView({Key? key}) : super(key: key);
@@ -12,24 +19,26 @@ class DoingView extends StatefulWidget {
 }
 
 class _DoingViewState extends State<DoingView> {
-  final _baseUrl = 'https://jsonplaceholder.typicode.com/posts';
+  var doingListViewModel = DoingViewModel(todoListRepository: TodoListAPI());
 
   int _page = 0;
-  final int _limit = 20;
+  final int _limit = 10;
   bool _hasNextPage = true;
   bool _isFirstLoadRunning = false;
   bool _isLoadMoreRunning = false;
-  List _posts = [];
+  late final List<TaskListModel> _doingList = [];
 
   void _firstLoad() async {
     setState(() {
       _isFirstLoadRunning = true;
     });
     try {
-      final res =
-      await http.get(Uri.parse("$_baseUrl?_page=$_page&_limit=$_limit"));
+      List<dynamic> taskFuture = await doingListViewModel.fetchList(
+          _page.toString(), _limit.toString());
       setState(() {
-        _posts = json.decode(res.body);
+        for (var item in taskFuture) {
+          _doingList.add(item);
+        }
       });
     } catch (err) {
       if (kDebugMode) {
@@ -42,29 +51,25 @@ class _DoingViewState extends State<DoingView> {
     });
   }
 
-  // This function will be triggered whenver the user scroll
-  // to near the bottom of the list view
-  void _loadMore() async {
+  Future<void> _loadMore() async {
     if (_hasNextPage == true &&
         _isFirstLoadRunning == false &&
         _isLoadMoreRunning == false &&
         _controller.position.extentAfter < 300) {
       setState(() {
-        _isLoadMoreRunning = true; // Display a progress indicator at the bottom
+        _isLoadMoreRunning = true;
       });
-      _page += 1; // Increase _page by 1
+      _page += 1;
       try {
-        final res =
-        await http.get(Uri.parse("$_baseUrl?_page=$_page&_limit=$_limit"));
-
-        final List fetchedPosts = json.decode(res.body);
-        if (fetchedPosts.isNotEmpty) {
+        List<dynamic> taskFuture = await doingListViewModel.fetchList(
+            _page.toString(), _limit.toString());
+        if (taskFuture.isNotEmpty) {
           setState(() {
-            _posts.addAll(fetchedPosts);
+            for (var item in taskFuture) {
+              _doingList.add(item);
+            }
           });
         } else {
-          // This means there is no more data
-          // and therefore, we will not send another GET request
           setState(() {
             _hasNextPage = false;
           });
@@ -80,13 +85,13 @@ class _DoingViewState extends State<DoingView> {
       });
     }
   }
+
   @override
   void dispose() {
     _controller.removeListener(_loadMore);
     super.dispose();
   }
 
-  // The controller for the ListView
   late ScrollController _controller;
 
   @override
@@ -99,50 +104,111 @@ class _DoingViewState extends State<DoingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kindacode.com'),
-      ),
       body: _isFirstLoadRunning
           ? const Center(
-        child: const CircularProgressIndicator(),
-      )
+              child: CircularProgressIndicator(),
+            )
           : Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _controller,
-              itemCount: _posts.length,
-              itemBuilder: (_, index) => Card(
-                margin: const EdgeInsets.symmetric(
-                    vertical: 8, horizontal: 10),
-                child: ListTile(
-                  title: Text(_posts[index]['title']),
-                  subtitle: Text(_posts[index]['body']),
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                      controller: _controller,
+                      itemCount: _doingList.length,
+                      itemBuilder: (_, index) => Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: const BorderSide(
+                                  width: 1.0, color: Colors.black12),
+                            ),
+                            elevation: 0.0,
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            child: Slidable(
+                              key: const ValueKey(0),
+                              startActionPane: ActionPane(
+                                motion: const ScrollMotion(),
+                                // dismissible:
+                                //     DismissiblePane(onDismissed: () {}),
+                                children: [
+                                  SlidableAction(
+                                    autoClose: true,
+                                    onPressed: (BuildContext context) {
+                                      deleteItem(_doingList[index].id.toString());
+                                    },
+                                    backgroundColor: const Color(0xFFFE4A49),
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete,
+                                    label: 'Delete',
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 8.0),
+                                leading: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.circular(30.0),
+                                  ),
+                                  padding: const EdgeInsets.all(4.0),
+                                  height: 40.0,
+                                  width: 40.0,
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      _doingList[index].title.substring(0, 2),
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                                title: Text(_doingList[index].title),
+                                subtitle: Container(
+                                    margin: const EdgeInsets.only(top: 6),
+                                    child: Text(
+                                      _doingList[index].description,
+                                      style: const TextStyle(fontSize: 12),
+                                    )),
+                                trailing: IconButton(
+                                  icon: Container(
+                                      padding: const EdgeInsets.only(
+                                          left: 0, right: 0, top: 8, bottom: 8),
+                                      child: Image.asset(
+                                        'assets/images/menu-dots-vertical.png',
+                                        color: Colors.grey,
+                                      )),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ),
+                          )
+                      ),
                 ),
-              ),
-            ),
-          ),
 
-          // when the _loadMore function is running
-          if (_isLoadMoreRunning == true)
-            const Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 40),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
+                if (_isLoadMoreRunning == true)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10, bottom: 40),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
 
-          // When nothing else to load
-          if (_hasNextPage == false)
-            Container(
-              padding: const EdgeInsets.only(top: 30, bottom: 40),
-              color: Colors.amber,
-              child: const Center(
-                child: Text('You have fetched all of the content'),
-              ),
+                if (_hasNextPage == false)
+                  Container(
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
+                    color: Colors.grey,
+                    child: const Center(
+                      child: Text('You have fetched all of the content'),
+                    ),
+                  ),
+              ],
             ),
-        ],
-      ),
     );
+  }
+
+  void deleteItem(String id) {
+    setState(() {
+      _doingList.removeWhere((item) => item.id == id);
+    });
   }
 }

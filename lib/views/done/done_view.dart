@@ -18,10 +18,9 @@ class DoneView extends StatefulWidget {
 class _DoneViewState extends State<DoneView> {
   late List<TodoListModel> _todoList = [];
   var todoListViewModel = TodoViewModel(todoListRepository: TodoListAPI());
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   int _currentMax = 10;
   var setGetDataOnInitState = true;
-
   Future<List<TodoListModel>> getData() {
     return todoListViewModel.fetchAllTodoList(_currentMax.toString());
   }
