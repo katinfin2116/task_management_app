@@ -10,11 +10,11 @@ class TodoListAPI extends TodoListRepository {
   var endPoint = "https://todo-list-api-mfchjooefq-as.a.run.app/todo-list";
 
   @override
-  Future<List<TodoListModel>> getAllTodoList() async {
+  Future<List<TodoListModel>> getAllTodoList(String limit) async {
     try {
       var response = await Dio()
-          // .get('$endPoint?offset=0&limit=2&sortBy=createdAt&isAsc=true&status=TODO');
-          .get(endPoint);
+          .get('$endPoint?offset=0&limit=$limit&sortBy=createdAt&isAsc=true&status=TODO');
+          // .get(endPoint);
       var list = response.data["tasks"] as List;
       todoListModel = list.map((post) => TodoListModel.fromJson(post)).toList();
     } catch (exception) {

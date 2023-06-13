@@ -16,45 +16,50 @@ class TodoView extends StatefulWidget {
 
 class _TodoViewState extends State<TodoView> {
   int get count => _todoList.length;
+  var _limit = 10;
   var todoListViewModel = TodoViewModel(todoListRepository: TodoListAPI());
 
   late List<TodoListModel> _todoList = [];
   var setGetDataOnInitState = true;
 
-  Future<List<TodoListModel>> getData() async {
+  Future<List<TodoListModel>> getInit() async {
     if (_todoList.isEmpty) {
       if (setGetDataOnInitState == false) {
-        return todoListViewModel.fetchAllTodoList();
+        return todoListViewModel.fetchAllTodoList(_limit.toString());
       }
       return _todoList;
     }
     return _todoList;
   }
 
+  Future<List<TodoListModel>> getAdd() async {
+    return todoListViewModel.fetchAllTodoList(_limit.toString());
+  }
+
   Future<bool> _loadMore() async {
-    print("onLoadMore");
-    await Future.delayed(const Duration(seconds: 0, milliseconds: 100));
-    getData();
+    await Future.delayed(const Duration(seconds: 1, milliseconds: 100));
+    _limit += 10;
+    getAdd();
     return true;
   }
 
   Future<void> _refresh() async {
-    await Future.delayed(const Duration(seconds: 0, milliseconds: 100));
+    await Future.delayed(const Duration(seconds: 1, milliseconds: 100));
     _todoList.clear();
-    getData();
+    getInit();
   }
 
   @override
   void initState() {
     setGetDataOnInitState = false;
-    getData();
+    getInit();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<TodoListModel>>(
-      future: getData(),
+      future: getInit(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
@@ -63,9 +68,11 @@ class _TodoViewState extends State<TodoView> {
           return RefreshIndicator(
               onRefresh: _refresh,
               child: LoadMore(
-                  isFinish: count >= 5,
+                  isFinish: count >= 50,
                   onLoadMore: _loadMore,
                   whenEmptyLoad: true,
+                  delegate: const DefaultLoadMoreDelegate(),
+                  textBuilder: DefaultLoadMoreTextBuilder.english,
                   child: GroupedListView<TodoListModel, String>(
                     elements: _todoList,
                     groupBy: (element) => element.status,
