@@ -3,12 +3,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:task_management_app/models/todo_list_model.dart';
 
 import '../../models/task_list_model.dart';
-import '../../repositories/todo_list_api.dart';
+import '../../repositories/task_list_api.dart';
 import '../../view_models/doing_view_model.dart';
 import '../../view_models/todo_view_model.dart';
 
@@ -20,8 +18,8 @@ class DoingView extends StatefulWidget {
 }
 
 class _DoingViewState extends State<DoingView> {
-  var doingListViewModel = DoingViewModel(todoListRepository: TodoListAPI());
-
+  var doingListViewModel = DoingViewModel(taskListRepository: TaskListAPI());
+  final _status = "DOING";
   int _page = 0;
   final int _limit = 10;
   bool _hasNextPage = true;
@@ -35,7 +33,7 @@ class _DoingViewState extends State<DoingView> {
     });
     try {
       List<dynamic> taskFuture = await doingListViewModel.fetchList(
-          _page.toString(), _limit.toString());
+          _page.toString(), _limit.toString(),_status.toString());
       setState(() {
         for (var item in taskFuture) {
           _doingList.add(item);
@@ -63,7 +61,7 @@ class _DoingViewState extends State<DoingView> {
       _page += 1;
       try {
         List<dynamic> taskFuture = await doingListViewModel.fetchList(
-            _page.toString(), _limit.toString());
+            _page.toString(), _limit.toString(), _status.toString());
         if (taskFuture.isNotEmpty) {
           setState(() {
             for (var item in taskFuture) {

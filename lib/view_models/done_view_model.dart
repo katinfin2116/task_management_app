@@ -2,18 +2,17 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 
-
 import '../models/task_list_model.dart';
 import '../repositories/task_list_repository.dart';
 
-class DoingViewModel {
+class DoneViewModel {
   TaskListRepository? taskListRepository;
-  DoingViewModel({this.taskListRepository});
+  DoneViewModel({this.taskListRepository});
 
   Future<List<TaskListModel>> fetchList(
       String offset, String limit, String status) async {
     List<TaskListModel> list =
-        await taskListRepository!.getAllTaskList(offset, limit,status);
+    await taskListRepository!.getAllTaskList(offset, limit,status);
     return list;
   }
 }

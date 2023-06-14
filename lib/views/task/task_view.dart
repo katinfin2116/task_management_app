@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:local_session_timeout/local_session_timeout.dart';
 import 'package:task_management_app/views/doing/doing_view.dart';
 import 'package:task_management_app/views/done/done_view.dart';
